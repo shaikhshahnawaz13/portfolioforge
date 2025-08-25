@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioForge - AI-Powered Portfolio Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+    <script src="https://unpkg.com/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --accent: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        body.dark {
+            color: var(--gray-100);
+            background-color: var(--gray-900);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .magnetic-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .magnetic-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .dark .card {
+            background-color: var(--gray-800);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .reveal-animation {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn-primary:hover,
+            .card:hover,
+            .magnetic-btn::before,
+            .reveal-animation,
+            .fade-in {
+                transition: none;
+                transform: none;
+                animation: none;
+            }
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 28rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .dark .modal {
+            background-color: var(--gray-800);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        /* Avatar selector */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* User menu */
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-top: var(--spacing-xs);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+
+        .dark .user-menu {
+            background-color: var(--gray-800);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-menu.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .user-menu-item {
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-menu-item:hover {
+            background-color: var(--gray-100);
+        }
+
+        .dark .user-menu-item:hover {
+            background-color: var(--gray-700);
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .dark .form-input {
+            background-color: var(--gray-800);
+            border-color: var(--gray-600);
+            color: var(--gray-100);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: var(--spacing-sm) 0;
+            transition: var(--transition);
+        }
+
+        .dark .navbar {
+            background-color: rgba(17, 24, 39, 0.95);
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .navbar.scrolled {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hero section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        /* Feature cards */
+        .feature-card {
+            padding: var(--spacing-lg);
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .dark .feature-icon {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Pricing cards */
+        .pricing-card {
+            padding: var(--spacing-xl);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark .pricing-card {
+            border-color: var(--gray-700);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04);
+        }
+
+        .dark .pricing-card.featured {
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 10px 10px -5px rgba(59, 130, 246, 0.1);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-bottom-left-radius: var(--radius-md);
+        }
+
+        /* Dashboard */
+        .project-card {
+            padding: var(--spacing-md);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .dark .project-card {
+            border-color: var(--gray-700);
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            width: 48px;
+            height: 24px;
+            background-color: var(--gray-300);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark .theme-toggle {
+            background-color: var(--gray-600);
+        }
+
+        .theme-toggle-handle {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark .theme-toggle-handle {
+            transform: translateX(24px);
+        }
+
+        /* AI Studio */
+        .ai-studio-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .dark .ai-studio-tabs {
+            border-color: var(--gray-700);
+        }
+
+        .ai-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .ai-tab.active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .file-upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark .file-upload-area {
+            border-color: var(--gray-600);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.875rem;
+            }
+            
+            .avatar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .ai-studio-tabs {
+                flex-direction: column;
+            }
+            
+            .avatar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-primary-600">PortfolioForge</a>
+            
+            <div class="hidden md:flex space-x-6">
+                <a href="#features" class="hover:text-primary-600 transition-colors">Features</a>
+                <a href="#how-it-works" class="hover:text-primary-600 transition-colors">How It Works</a>
+                <a href="#pricing" class="hover:text-primary-600 transition-colors">Pricing</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="theme-toggle mr-2" id="themeToggle">
+                    <div class="theme-toggle-handle"></div>
+                </div>
+                
+                <div class="flex items-center space-x-2" id="authButtons">
+                    <button class="text-gray-600 hover:text-gray-800 transition-colors" onclick="openModal('loginModal')">Login</button>
+                    <button class="btn-primary magnetic-btn" onclick="openModal('signupModal')">Sign Up</button>
+                </div>
+                
+                <div class="hidden relative" id="userMenuContainer">
+                    <img src="https://i.pravatar.cc/40?img=5" alt="User avatar" class="w-10 h-10 rounded-full cursor-pointer" id="userAvatar">
+                    <div class="user-menu" id="userMenu">
+                        <div class="user-menu-item" onclick="navigateTo('ai-studio')">AI Studio</div>
+                        <div class="user-menu-item" onclick="navigateTo('dashboard')">Dashboard</div>
+                        <div class="user-menu-item" onclick="navigateTo('account')">Account</div>
+                        <div class="user-menu-item" onclick="logout()">Logout</div>
+                    </div>
+                </div>
+                
+                <button class="md:hidden" id="mobileMenuButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile menu (hidden by default) -->
+    <div class="fixed inset-0 z-30 bg-white dark:bg-gray-900 hidden" id="mobileMenu">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex justify-between items-center mb-8">
+                <a href="#" class="text-xl font-bold text-primary-600">PortfolioForge</a>
+                <button onclick="closeMobileMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-col space-y-6">
+                <a href="#features" class="text-lg" onclick="closeMobileMenu()">Features</a>
+                <a href="#how-it-works" class="text-lg" onclick="closeMobileMenu()">How It Works</a>
+                <a href="#pricing" class="text-lg" onclick="closeMobileMenu()">Pricing</a>
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button class="w-full py-2 text-center mb-3" onclick="openModal('loginModal'); closeMobileMenu();">Login</button>
+                    <button class="btn-primary magnetic-btn w-full" onclick="openModal('signupModal'); closeMobileMenu();">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <!-- Background pattern -->
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+        </div>
+        
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center hero-content">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 reveal-animation">Create Your Professional Portfolio in Minutes</h1>
+                <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 reveal-animation">PortfolioForge uses AI to automatically generate beautiful portfolio websites from your GitHub, LinkedIn, and resume.</p>
+                <button class="btn-primary magnetic-btn text-lg px-8 py-4 reveal-animation" onclick="handleGenerateClick()">
+                    Generate My Portfolio
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-center">Powerful Features</h2>
+            <p class="text-xl text-center text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">Everything you need to create a standout portfolio that gets you noticed</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">AI-Powered Generation</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Our advanced AI analyzes your experience and creates compelling content that highlights your skills and achievements.</p>
+                </div>
+                
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Multiple Sources</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Connect your GitHub, LinkedIn, or upload your resume. We pull data from all sources to create a comprehensive portfolio.</p>
+                </div>
+                
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Privacy Control</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Keep your portfolio private until you're ready to share. You have full control over what's visible to others.</p>
+                </div>
+                
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Customizable Templates</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Choose from professionally designed templates that you can customize to match your personal brand.</p>
+                </div>
+                
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Secure & Reliable</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Your data is encrypted and securely stored. We follow industry best practices to keep your information safe.</p>
+                </div>
+                
+                <div class="card feature-card reveal-animation">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Always Available</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Access and update your portfolio from anywhere, at any time. Your online presence is always up to date.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-center">How It Works</h2>
+            <p class="text-xl text-center text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">Creating your professional portfolio has never been easier</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center reveal-animation">
+                    <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-primary-600">1</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Sign Up & Connect</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Create your account and connect your GitHub, LinkedIn, or upload your resume.</p>
+                </div>
+                
+                <div class="text-center reveal-animation">
+                    <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-primary-600">2</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">AI Analysis</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Our AI analyzes your experience and generates compelling content for your portfolio.</p>
+                </div>
+                
+                <div class="text-center reveal-animation">
+                    <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-primary-600">3</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Customize</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Review and customize your portfolio with our easy-to-use editor.</p>
+                </div>
+                
+                <div class="text-center reveal-animation">
+                    <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-primary-600">4</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Publish & Share</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Publish your portfolio with a unique URL and share it with the world.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-center">Simple, Transparent Pricing</h2>
+            <p class="text-xl text-center text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">Choose the plan that works best for you</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="pricing-card reveal-animation">
+                    <h3 class="text-2xl font-semibold mb-4">Free</h3>
+                    <div class="text-4xl font-bold mb-6">$0<span class="text-lg font-normal text-gray-500">/month</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            1 Portfolio
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Basic Templates
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            GitHub Integration
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            AI Content Generation
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Custom Domain
+                        </li>
+                    </ul>
+                    <button class="btn-primary magnetic-btn w-full" onclick="openModal('signupModal')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card featured reveal-animation">
+                    <div class="pricing-badge">POPULAR</div>
+                    <h3 class="text-2xl font-semibold mb-4">Pro</h3>
+                    <div class="text-4xl font-bold mb-6">$9<span class="text-lg font-normal text-gray-500">/month</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Unlimited Portfolios
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            All Templates
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            GitHub + LinkedIn Integration
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            AI Content Generation
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Custom Domain
+                        </li>
+                    </ul>
+                    <button class="btn-primary magnetic-btn w-full" onclick="openModal('signupModal')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card reveal-animation">
+                    <h3 class="text-2xl font-semibold mb-4">Enterprise</h3>
+                    <div class="text-4xl font-bold mb-6">$29<span class="text-lg font-normal text-gray-500">/month</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Unlimited Portfolios
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            All Templates + Custom
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            All Integrations
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Advanced AI Features
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Custom Domain + SSL
+                        </li>
+                    </ul>
+                    <button class="btn-primary magnetic-btn w-full" onclick="openModal('signupModal')">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-primary-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 reveal-animation">Ready to Build Your Portfolio?</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto reveal-animation">Join thousands of developers who have created stunning portfolios with PortfolioForge</p>
+            <button class="btn-primary magnetic-btn bg-white text-primary-600 text-lg px-8 py-4 hover:bg-gray-100 reveal-animation" onclick="handleGenerateClick()">
+                Get Started For Free
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-gray-100 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">PortfolioForge</h3>
+                    <p class="text-gray-600 dark:text-gray-300">The easiest way to create a professional portfolio from your GitHub, LinkedIn, and resume.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Pricing</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Templates</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Examples</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Documentation</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Support</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">API</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-600 dark:text-gray-300">© 2023 PortfolioForge. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Login</h2>
+                    <button onclick="closeModal('loginModal')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail" class="form-label">Email</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary magnetic-btn w-full mt-4">Login</button>
+                </form>
+                
+                <p class="text-center mt-4 text-gray-600 dark:text-gray-300">
+                    Don't have an account? 
+                    <button class="text-primary-600 font-medium" onclick="closeModal('loginModal'); openModal('signupModal');">Sign up</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Create Account</h2>
+                    <button onclick="closeModal('signupModal')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        </button>
+                </div>
+                
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName" class="form-label">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Your name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail" class="form-label">Email</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword" class="form-label">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required minlength="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Choose an Avatar</label>
+                        <div class="avatar-grid" id="avatarGrid">
+                            <img src="https://i.pravatar.cc/80?img=1" data-avatar="https://i.pravatar.cc/120?img=1" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=2" data-avatar="https://i.pravatar.cc/120?img=2" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=3" data-avatar="https://i.pravatar.cc/120?img=3" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=4" data-avatar="https://i.pravatar.cc/120?img=4" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=5" data-avatar="https://i.pravatar.cc/120?img=5" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=6" data-avatar="https://i.pravatar.cc/120?img=6" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=7" data-avatar="https://i.pravatar.cc/120?img=7" class="avatar-option">
+                            <img src="https://i.pravatar.cc/80?img=8" data-avatar="https://i.pravatar.cc/120?img=8" class="avatar-option">
+                        </div>
+                        <input type="hidden" id="selectedAvatar" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary magnetic-btn w-full mt-4">Create Account</button>
+                </form>
+                
+                <p class="text-center mt-4 text-gray-600 dark:text-gray-300">
+                    Already have an account? 
+                    <button class="text-primary-600 font-medium" onclick="closeModal('signupModal'); openModal('loginModal');">Login</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Studio Modal (for demo purposes) -->
+    <div class="modal-overlay" id="aiStudioModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">AI Studio</h2>
+                    <button onclick="closeModal('aiStudioModal')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="ai-studio-tabs">
+                    <div class="ai-tab active" data-tab="github">GitHub</div>
+                    <div class="ai-tab" data-tab="linkedin">LinkedIn</div>
+                    <div class="ai-tab" data-tab="resume">Resume</div>
+                </div>
+                
+                <div id="githubTab" class="tab-content">
+                    <div class="form-group">
+                        <label for="githubUsername" class="form-label">GitHub Username</label>
+                        <input type="text" id="githubUsername" class="form-input" placeholder="Your GitHub username">
+                    </div>
+                </div>
+                
+                <div id="linkedinTab" class="tab-content hidden">
+                    <div class="form-group">
+                        <label for="linkedinUrl" class="form-label">LinkedIn Profile URL</label>
+                        <input type="url" id="linkedinUrl" class="form-input" placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                </div>
+                
+                <div id="resumeTab" class="tab-content hidden">
+                    <div class="file-upload-area" id="resumeUploadArea">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="text-gray-600 dark:text-gray-300">Drag & drop your resume here or click to browse</p>
+                        <p class="text-sm text-gray-500 mt-2">PDF or DOCX files only (Max 5MB)</p>
+                        <input type="file" id="resumeFile" class="hidden" accept=".pdf,.doc,.docx">
+                    </div>
+                </div>
+                
+                <button class="btn-primary magnetic-btn w-full mt-6" onclick="parseData()">Generate Portfolio</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State Management
+        const AppState = {
+            currentUser: null,
+            isLoggedIn: false,
+            users: JSON.parse(localStorage.getItem('portfolioForgeUsers')) || [],
+            projects: JSON.parse(localStorage.getItem('portfolioForgeProjects')) || {},
+        };
+
+        // DOM Elements
+        const DOM = {
+            authButtons: document.getElementById('authButtons'),
+            userMenuContainer: document.getElementById('userMenuContainer'),
+            userAvatar: document.getElementById('userAvatar'),
+            userMenu: document.getElementById('userMenu'),
+            mobileMenu: document.getElementById('mobileMenu'),
+            themeToggle: document.getElementById('themeToggle'),
+            loginForm: document.getElementById('loginForm'),
+            signupForm: document.getElementById('signupForm'),
+        };
+
+        // Initialize Lenis smooth scrolling
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+
+        // Initialize GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            setupEventListeners();
+            setupAnimations();
+        });
+
+        // Initialize application state and UI
+        function initApp() {
+            // Check if user is logged in
+            const savedUser = localStorage.getItem('portfolioForgeCurrentUser');
+            if (savedUser) {
+                AppState.currentUser = JSON.parse(savedUser);
+                AppState.isLoggedIn = true;
+                updateUIForLoggedInUser();
+            }
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('portfolioForgeTheme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Form submissions
+            DOM.loginForm?.addEventListener('submit', handleLogin);
+            DOM.signupForm?.addEventListener('submit', handleSignup);
+            
+            // User menu toggle
+            DOM.userAvatar?.addEventListener('click', toggleUserMenu);
+            
+            // Theme toggle
+            DOM.themeToggle?.addEventListener('click', toggleTheme);
+            
+            // Navbar scroll effect
+            window.addEventListener('scroll', handleNavbarScroll);
+            
+            // Close user menu when clicking outside
+            document.addEventListener('click', handleOutsideClick);
+            
+            // Avatar selection
+            setupAvatarSelection();
+            
+            // File upload area
+            setupFileUpload();
+            
+            // Tab functionality for AI Studio
+            setupAITabs();
+            
+            // Mobile menu
+            document.getElementById('mobileMenuButton')?.addEventListener('click', openMobileMenu);
+            document.querySelectorAll('#mobileMenu button, #mobileMenu a')?.forEach(element => {
+                element.addEventListener('click', closeMobileMenu);
+            });
+        }
+
+        // Set up animations
+        function setupAnimations() {
+            // Animate elements on scroll
+            gsap.utils.toArray('.reveal-animation').forEach(element => {
+                gsap.to(element, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+        }
+
+        // Set up avatar selection
+        function setupAvatarSelection() {
+            document.querySelectorAll('.avatar-option').forEach(avatar => {
+                avatar.addEventListener('click', function() {
+                    document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+                    this.classList.add('selected');
+                    document.getElementById('selectedAvatar').value = this.dataset.avatar;
+                });
+            });
+        }
+
+        // Set up file upload area
+        function setupFileUpload() {
+            const resumeUploadArea = document.getElementById('resumeUploadArea');
+            const resumeFileInput = document.getElementById('resumeFile');
+            
+            if (resumeUploadArea && resumeFileInput) {
+                resumeUploadArea.addEventListener('click', () => resumeFileInput.click());
+                
+                resumeUploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    resumeUploadArea.classList.add('border-primary-600', 'bg-primary-50');
+                });
+                
+                resumeUploadArea.addEventListener('dragleave', () => {
+                    resumeUploadArea.classList.remove('border-primary-600', 'bg-primary-50');
+                });
+                
+                resumeUploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    resumeUploadArea.classList.remove('border-primary-600', 'bg-primary-50');
+                    
+                    if (e.dataTransfer.files.length) {
+                        resumeFileInput.files = e.dataTransfer.files;
+                    }
+                });
+            }
+        }
+
+        // Set up AI tabs
+        function setupAITabs() {
+            document.querySelectorAll('.ai-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+                    // Show the selected tab content
+                    document.getElementById(this.dataset.tab + 'Tab').classList.remove('hidden');
+                });
+            });
+        }
+
+        // Handle navbar scroll effect
+        function handleNavbarScroll() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+
+        // Handle clicks outside user menu to close it
+        function handleOutsideClick(e) {
+            if (DOM.userMenuContainer && !DOM.userMenuContainer.contains(e.target)) {
+                DOM.userMenu.classList.remove('active');
+            }
+        }
+
+        // Toggle user menu
+        function toggleUserMenu() {
+            DOM.userMenu.classList.toggle('active');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openMobileMenu() {
+            DOM.mobileMenu.classList.remove('hidden');
+        }
+
+        function closeMobileMenu() {
+            DOM.mobileMenu.classList.add('hidden');
+        }
+
+        // Theme toggle function
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('portfolioForgeTheme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Handle login form submission
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Find user by email
+            const user = AppState.users.find(u => u.email === email);
+            
+            if (!user) {
+                alert('No user found with this email address.');
+                return;
+            }
+            
+            // Check password (in a real app, this would use proper hashing)
+            if (user.password !== password) {
+                alert('Incorrect password.');
+                return;
+            }
+            
+            // Login successful
+            AppState.currentUser = user;
+            AppState.isLoggedIn = true;
+            localStorage.setItem('portfolioForgeCurrentUser', JSON.stringify(user));
+            
+            // Update UI
+            updateUIForLoggedInUser();
+            closeModal('loginModal');
+            
+            // Show success message
+            alert(`Welcome back, ${user.name}!`);
+        }
+
+        // Handle signup form submission
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const avatar = document.getElementById('selectedAvatar').value;
+            
+            // Validate required fields
+            if (!name || !email || !password || !avatar) {
+                alert('Please fill out all required fields, including selecting an avatar.');
+                return;
+            }
+            
+            // Check if user already exists
+            if (AppState.users.some(u => u.email === email)) {
+                alert('A user with this email already exists.');
+                return;
+            }
+            
+            // Create new user (in a real app, password would be hashed)
+            const newUser = {
+                id: Date.now().toString(),
+                name,
+                email,
+                password,
+                avatar,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add user to users array and save to localStorage
+            AppState.users.push(newUser);
+            localStorage.setItem('portfolioForgeUsers', JSON.stringify(AppState.users));
+            
+            // Set as current user
+            AppState.currentUser = newUser;
+            AppState.isLoggedIn = true;
+            localStorage.setItem('portfolioForgeCurrentUser', JSON.stringify(newUser));
+            
+            // Initialize empty projects array for new user
+            if (!AppState.projects[newUser.id]) {
+                AppState.projects[newUser.id] = [];
+                localStorage.setItem('portfolioForgeProjects', JSON.stringify(AppState.projects));
+            }
+            
+            // Update UI
+            updateUIForLoggedInUser();
+            closeModal('signupModal');
+            
+            // Show success message
+            alert(`Welcome to PortfolioForge, ${name}! Your account has been created.`);
+        }
+
+        // Logout function
+        function logout() {
+            AppState.currentUser = null;
+            AppState.isLoggedIn = false;
+            localStorage.removeItem('portfolioForgeCurrentUser');
+            
+            // Update UI
+            DOM.authButtons.classList.remove('hidden');
+            DOM.userMenuContainer.classList.add('hidden');
+            DOM.userMenu.classList.remove('active');
+            
+            // Show login modal
+            openModal('loginModal');
+            
+            // Show logout message
+            alert('You have been logged out successfully.');
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            if (AppState.isLoggedIn && AppState.currentUser) {
+                // Show user menu, hide auth buttons
+                DOM.authButtons.classList.add('hidden');
+                DOM.userMenuContainer.classList.remove('hidden');
+                
+                // Update avatar
+                DOM.userAvatar.src = AppState.currentUser.avatar;
+                
+                // Check if we need to show dashboard (if on dashboard page)
+                if (window.location.hash === '#dashboard') {
+                    showDashboard();
+                }
+            }
+        }
+
+        // Handle Generate button click (check auth status)
+        function handleGenerateClick() {
+            if (!AppState.isLoggedIn) {
+                openModal('loginModal');
+                alert('Please log in to use the AI portfolio generator.');
+            } else {
+                openModal('aiStudioModal');
+            }
+        }
+
+        // Navigate to different sections
+        function navigateTo(section) {
+            switch(section) {
+                case 'ai-studio':
+                    if (!AppState.isLoggedIn) {
+                        openModal('loginModal');
+                        alert('Please log in to access AI Studio.');
+                    } else {
+                        openModal('aiStudioModal');
+                    }
+                    break;
+                case 'dashboard':
+                    if (!AppState.isLoggedIn) {
+                        openModal('loginModal');
+                        alert('Please log in to view your dashboard.');
+                    } else {
+                        window.location.hash = 'dashboard';
+                        showDashboard();
+                    }
+                    break;
+                case 'account':
+                    alert('Account management coming soon!');
+                    break;
+            }
+            DOM.userMenu.classList.remove('active');
+        }
+
+        // Show dashboard with user's projects
+        function showDashboard() {
+            // Create dashboard content if it doesn't exist
+            if (!document.getElementById('dashboardContent')) {
+                const mainContent = document.querySelector('main') || document.body;
+                
+                // Save current scroll position
+                const scrollPos = window.scrollY;
+                
+                // Replace main content with dashboard
+                mainContent.innerHTML = `
+                    <section class="py-20">
+                        <div class="container mx-auto px-4" id="dashboardContent">
+                            <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
+                            <div class="mb-8">
+                                <h2 class="text-xl font-semibold mb-4">Welcome, ${AppState.currentUser.name}!</h2>
+                                <p class="text-gray-600 dark:text-gray-300">Manage your portfolio projects here.</p>
+                            </div>
+                            <div class="mb-8">
+                                <button class="btn-primary magnetic-btn" onclick="createNewProject()">Create New Project</button>
+                            </div>
+                            <div id="projectsList">
+                                <h3 class="text-lg font-semibold mb-4">My Projects</h3>
+                                <div id="projectsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <!-- Projects will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                `;
+                
+                // Load user's projects
+                loadUserProjects();
+                
+                // Restore scroll position
+                window.scrollTo(0, scrollPos);
+            }
+        }
+
+        // Load user's projects from localStorage
+        function loadUserProjects() {
+            const projectsContainer = document.getElementById('projectsContainer');
+            if (!projectsContainer) return;
+            
+            const userProjects = AppState.projects[AppState.currentUser.id] || [];
+            
+            if (userProjects.length === 0) {
+                projectsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-gray-600 dark:text-gray-300">You don't have any projects yet.</p>
+                        <button class="btn-primary magnetic-btn mt-4" onclick="createNewProject()">Create Your First Project</button>
+                    </div>
+                `;
+            } else {
+                projectsContainer.innerHTML = userProjects.map(project => `
+                    <div class="project-card">
+                        <h4 class="text-lg font-semibold mb-2">${project.title}</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">Last updated: ${new Date(project.updatedAt).toLocaleDateString()}</p>
+                        <div class="flex space-x-2">
+                            <button class="text-sm text-primary-600 hover:text-primary-800" onclick="editProject('${project.id}')">Edit</button>
+                            <button class="text-sm text-red-600 hover:text-red-800" onclick="deleteProject('${project.id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Create a new project
+        function createNewProject() {
+            const projectId = Date.now().toString();
+            const newProject = {
+                id: projectId,
+                title: `Project ${projectId.slice(-4)}`,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                data: {}
+            };
+            
+            // Add to user's projects
+            if (!AppState.projects[AppState.currentUser.id]) {
+                AppState.projects[AppState.currentUser.id] = [];
+            }
+            
+            AppState.projects[AppState.currentUser.id].push(newProject);
+            localStorage.setItem('portfolioForgeProjects', JSON.stringify(AppState.projects));
+            
+            // Reload projects
+            loadUserProjects();
+            
+            // Open AI Studio to edit the new project
+            openModal('aiStudioModal');
+        }
+
+        // Edit a project
+        function editProject(projectId) {
+            alert(`Editing project ${projectId} - This would open the editor in a real implementation.`);
+            openModal('aiStudioModal');
+        }
+
+        // Delete a project
+        function deleteProject(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                AppState.projects[AppState.currentUser.id] = AppState.projects[AppState.currentUser.id].filter(p => p.id !== projectId);
+                localStorage.setItem('portfolioForgeProjects', JSON.stringify(AppState.projects));
+                loadUserProjects();
+            }
+        }
+
+        // Parse data from AI Studio
+        function parseData() {
+            if (!AppState.isLoggedIn) {
+                openModal('loginModal');
+                alert('Please log in to use this feature.');
+                return;
+            }
+            
+            alert('Data parsing would happen here with real backend integration. For demo, we\'ll create a sample project.');
+            
+            // Create a sample project from parsed data
+            const projectId = Date.now().toString();
+            const newProject = {
+                id: projectId,
+                title: 'AI Generated Portfolio',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                data: {
+                    about: 'Software developer with experience in web technologies...',
+                    skills: ['JavaScript', 'React', 'Node.js'],
+                    projects: [
+                        {
+                            name: 'Sample Project',
+                            description: 'A demonstration of my skills',
+                            link: '#',
+                            tech: ['React', 'Node.js']
+                        }
+                    ],
+                    experience: [
+                        {
+                            role: 'Developer',
+                            company: 'Tech Company',
+                            from: '2020-01',
+                            to: 'Present',
+                            summary: 'Worked on various web projects'
+                        }
+                    ]
+                }
+            };
+            
+            // Add to user's projects
+            if (!AppState.projects[AppState.currentUser.id]) {
+                AppState.projects[AppState.currentUser.id] = [];
+            }
+            
+            AppState.projects[AppState.currentUser.id].push(newProject);
+            localStorage.setItem('portfolioForgeProjects', JSON.stringify(AppState.projects));
+            
+            closeModal('aiStudioModal');
+            alert('Portfolio generated successfully! Check your dashboard to view and edit it.');
+            
+            // If on dashboard, reload projects
+            if (window.location.hash === '#dashboard') {
+                loadUserProjects();
+            }
+        }
+    </script>
+</body>
+</html>
