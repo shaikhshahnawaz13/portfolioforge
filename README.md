@@ -52,8 +52,7 @@ Everything runs in your browser. No server, no account, no data stored anywhere.
 
 **[shaikhshahnawaz13.github.io/portfolioforge](https://shaikhshahnawaz13.github.io/portfolioforge/)**
 
-Open it, paste a free API key, upload your resume, and generate.
-
+![Portfolio Forge](ss-pf.png)
 ---
 
 ## Supported AI Providers
