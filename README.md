@@ -1,23 +1,21 @@
 <div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0d0d,50:003333,100:00F5D4&height=200&section=header&text=Shahnawaz%20Shaikh&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Full%20Stack%20Engineer%20%E2%80%A2%20AI%20Builder%20%E2%80%A2%20Open%20Source%20Creator&descAlignY=60&descSize=16&descColor=00F5D4" width="100%"/>
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0d0d,50:003333,100:00F5D4&height=200&section=header&text=Shahnawaz%20Shaikh&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Full%20Stack%20Engineer%20%E2%80%A2%20AI%20Builder%20%E2%80%A2%20Open%20Source%20Creator&descAlignY=60&descSize=16&descColor=00F5D4" width="100%"/>
+  <br/>
 
-<br/>
+  [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&duration=3000&pause=1000&color=00F5D4&center=true&vCenter=true&width=650&lines=Building+AI+tools+that+actually+ship;Portfolio+Forge+%E2%80%94+resume+%E2%86%92+portfolio+in+seconds;React+%7C+Node.js+%7C+Python+%7C+AI%2FML;Zero+to+deployed+%E2%80%94+no+fluff%2C+just+code)](https://git.io/typing-svg)
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&duration=3000&pause=1000&color=00F5D4&center=true&vCenter=true&width=650&lines=Building+AI+tools+that+actually+ship;Portfolio+Forge+%E2%80%94+resume+%E2%86%92+portfolio+in+seconds;React+%7C+Node.js+%7C+Python+%7C+AI%2FML;Zero+to+deployed+%E2%80%94+no+fluff%2C+just+code)](https://git.io/typing-svg)
+  <br/><br/>
 
-<br/><br/>
+  [![Portfolio](https://img.shields.io/badge/Portfolio-Visit%20Site-00F5D4?style=for-the-badge&logo=vercel&logoColor=black&labelColor=0a0a0a)](https://shaikhshahnawaz13.github.io/portfolioforge)
+  [![GitHub](https://img.shields.io/badge/GitHub-shaikhshahnawaz13-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shaikhshahnawaz13)
+  [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/shaikhshahnawaz13)
+  [![Email](https://img.shields.io/badge/Email-Hire%20Me-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:shaikhshahnawaz13@gmail.com)
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit%20Site-00F5D4?style=for-the-badge&logo=vercel&logoColor=black&labelColor=0a0a0a)](https://shaikhshahnawaz13.github.io/portfolioforge)
-[![GitHub](https://img.shields.io/badge/GitHub-shaikhshahnawaz13-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shaikhshahnawaz13)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/shaikhshahnawaz13)
-[![Email](https://img.shields.io/badge/Email-Hire%20Me-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:shaikhshahnawaz13@gmail.com)
+  <br/>
 
-<br/>
-
-![Profile Views](https://komarev.com/ghpvc/?username=shaikhshahnawaz13&color=00F5D4&style=for-the-badge&label=PROFILE+VIEWS)
-![GitHub followers](https://img.shields.io/github/followers/shaikhshahnawaz13?style=for-the-badge&color=FF6B35&labelColor=0a0a0a&label=FOLLOWERS)
-
+  ![Profile Views](https://komarev.com/ghpvc/?username=shaikhshahnawaz13&color=00F5D4&style=for-the-badge&label=PROFILE+VIEWS)
+  ![GitHub followers](https://img.shields.io/github/followers/shaikhshahnawaz13?style=for-the-badge&color=FF6B35&labelColor=0a0a0a&label=FOLLOWERS)
 </div>
 
 ---
@@ -157,7 +155,7 @@ const shahnawaz = {
 
 | Feature | Details |
 |:---|:---|
-| **Multi-Provider AI** | Groq (Llama 3.3 70B) · Gemini 2.0 Flash · OpenAI GPT-4o Mini · OpenRouter |
+| **Multi-Provider AI** | Groq (Llama 3.3 70B) · Gemini 2.0 Flash · OpenAI GPT-4o Mini · OpenRouter (Mistral 7B) |
 | **Key Pool Rotation** | Add multiple API keys — auto-rotates on rate-limit, never blocks you |
 | **In-Browser Parsing** | PDF.js + Mammoth.js — extracts text 100% in the browser, zero server uploads |
 | **6 Design Presets** | Dark Minimal · Editorial · Terminal · Glassmorphism · Bold · Clean |
@@ -203,7 +201,7 @@ portfolioforge/
 
 ![Commits](https://img.shields.io/badge/Total%20Commits-247-00F5D4?style=for-the-badge&logo=github&labelColor=0d0d0d)
 ![Longest Streak](https://img.shields.io/badge/Longest%20Streak-15%20days-FF6B35?style=for-the-badge&logo=github&labelColor=0d0d0d)
-![Repos](https://img.shields.io/badge/Public%20Repos-View%20All-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=0d0d0d)](https://github.com/shaikhshahnawaz13?tab=repositories)
+[![Repos](https://img.shields.io/badge/Public%20Repos-View%20All-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=0d0d0d)](https://github.com/shaikhshahnawaz13?tab=repositories)
 
 <br/>
 
@@ -215,26 +213,28 @@ portfolioforge/
 
 ---
 
-## Technical Signals
+## What This Repo Actually Demonstrates
 
 <div align="center">
 
-> *Skills evidenced by real shipped code — not just listed.*
+> *Every claim below is directly evidenced by code in this repository.*
 
-| Signal | Evidence | Depth |
+| Signal | Evidence in Code | Depth |
 |:---|:---|:---:|
-| **Auth** | JWT sessions, OAuth2 flows, bcrypt hashing | `████████░░` |
-| **Databases** | PostgreSQL schemas, MongoDB aggregations, Redis caching | `████████░░` |
-| **API Design** | REST status codes, GraphQL resolvers, rate-limit handling | `████████░░` |
-| **Docker** | Multi-stage Dockerfiles, compose stacks, container networking | `███████░░░` |
-| **CI/CD** | GitHub Actions: test → lint → build → deploy | `█████████░` |
-| **TypeScript** | Typed APIs, interfaces, generics, strict mode | `████████░░` |
-| **AI/ML** | Prompt engineering, multi-provider abstraction, token budgeting | `█████████░` |
-| **Real-time** | WebSockets, live preview iframes, event-driven reactive UI | `███████░░░` |
-| **Testing** | 36-test Vitest suite, unit + integration, typed error classes | `████████░░` |
-| **State Mgmt** | Vanilla STATE pattern, Redux patterns, Zustand stores | `████████░░` |
+| **AI / Multi-Provider** | 4 LLM providers, unified abstraction, prompt engineering, token budgeting | `█████████░` |
+| **API Integration** | REST calls to 4 different provider APIs, correct headers, per-provider error mapping | `████████░░` |
+| **Key Pool & Rate Limiting** | Round-robin rotation, backoff, `markKeyRateLimited()`, multi-round retry | `█████████░` |
+| **In-Browser File Parsing** | PDF.js Y-coordinate reconstruction, Mammoth.js DOCX extraction | `████████░░` |
+| **State Management** | Vanilla `STATE {}` pattern — single source of truth, no framework needed | `████████░░` |
+| **Testing** | 36-test Vitest suite: validators, parsers, file handling, typed error classes | `████████░░` |
+| **CI/CD** | GitHub Actions: test → HTML validate → deploy to Pages on every push | `█████████░` |
+| **Privacy / Security** | Keys in JS memory only — never `localStorage`, never sent to a server | `█████████░` |
+| **CSS Architecture** | Design system via 20+ CSS custom properties, 6 distinct design presets | `████████░░` |
+| **Error Handling** | Custom `RateLimitError` + `ParseError` classes, 4-strategy HTML parser | `████████░░` |
 
 </div>
+
+> **Note:** Auth, databases, Docker, TypeScript, WebSockets, and other skills listed in the Tech Stack badge section reflect my broader experience and other projects — not this specific repo, which is intentionally zero-dependency and serverless by design.
 
 ---
 
@@ -243,10 +243,10 @@ portfolioforge/
 <div align="center">
 
 ```
-  Portfolio Forge v4     ──  Claude / Anthropic streaming + live generation view
-  Real-time collab tool  ──  WebSockets + CRDT-based conflict-free state sync
-  AI code reviewer       ──  GitHub Action that reviews PRs via LLM feedback
-  Open-source UI lib     ──  Headless Tailwind + TypeScript components, zero JS
+Portfolio Forge v4     ──  Claude / Anthropic streaming + live generation view
+Real-time collab tool  ──  WebSockets + CRDT-based conflict-free state sync
+AI code reviewer       ──  GitHub Action that reviews PRs via LLM feedback
+Open-source UI lib     ──  Headless Tailwind + TypeScript components, zero JS
 ```
 
 </div>
