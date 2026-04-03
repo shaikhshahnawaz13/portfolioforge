@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Forge — AI Portfolio Generator</title>
+  <meta name="description" content="Upload your resume and forge a stunning portfolio website using AI. No server needed."/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+  <meta name="theme-color" content="#000000"/>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+  <!-- External libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="src/style.css"/>
+</head>
+<body>
+
+<!-- NOISE OVERLAY -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- HEADER -->
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="Portfolio Forge home">
+      Portfolio<span class="logo-bolt">⚡</span><span class="logo-blink">Forge</span>
+    </a>
+    <div class="header-status" aria-live="polite">
+      <span class="status-dot" id="provider-dot" aria-hidden="true"></span>
+      <span id="provider-label">GROQ · LLAMA 3.3 70B</span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <p class="eyebrow">↳ Upload · Prompt · Generate</p>
+    <h1 id="hero-heading">
+      Forge your portfolio<br/>from your résumé.
+    </h1>
+    <p class="hero-sub">
+      Upload a PDF or DOCX resume, pick your AI provider, write a design prompt, and get a complete portfolio forged in seconds — no server needed.
+    </p>
+  </div>
+</section>
+
+<!-- MAIN APP -->
+<main class="main-content" id="app">
+  <div class="container">
+
+    <!-- STEPS INDICATOR -->
+    <div class="steps" role="list" aria-label="Progress steps">
+      <div class="step-num active" id="sn1" role="listitem" aria-current="step">1</div>
+      <div class="step-conn" id="sc1" aria-hidden="true"></div>
+      <div class="step-num" id="sn2" role="listitem">2</div>
+      <div class="step-conn" id="sc2" aria-hidden="true"></div>
+      <div class="step-num" id="sn3" role="listitem">3</div>
+      <div class="step-conn" id="sc3" aria-hidden="true"></div>
+      <div class="step-num" id="sn4" role="listitem">4</div>
+    </div>
+
+    <div class="app-grid">
+
+      <!-- ── LEFT COLUMN ─────────────────────────────── -->
+      <div class="app-left">
+
+        <!-- STEP 0: AI PROVIDER -->
+        <section class="card-panel panel-api" id="api-key-section" aria-labelledby="provider-heading">
+          <div class="panel-header">
+            <span class="panel-label warning" id="provider-heading">⚠ 00 / AI Provider &amp; Key Pool</span>
+            <span class="key-status" id="key-status" aria-live="polite"></span>
+          </div>
+
+          <div class="provider-pills" role="radiogroup" aria-label="AI Provider">
+            <button class="pvdr-btn active" data-p="groq"       onclick="selectProvider('groq')"       role="radio" aria-checked="true">⚡ Groq</button>
+            <button class="pvdr-btn"        data-p="gemini"     onclick="selectProvider('gemini')"     role="radio" aria-checked="false">✦ Gemini</button>
+            <button class="pvdr-btn"        data-p="openai"     onclick="selectProvider('openai')"     role="radio" aria-checked="false">◆ OpenAI</button>
+            <button class="pvdr-btn"        data-p="openrouter" onclick="selectProvider('openrouter')" role="radio" aria-checked="false">⬡ OpenRouter</button>
+          </div>
+
+          <!-- Key input row with + button -->
+          <div class="key-row">
+            <input type="password" id="api-key-input" class="key-input"
+              placeholder="Paste Groq key — gsk_..."
+              autocomplete="off" spellcheck="false"
+              aria-label="API Key"
+              oninput="onKeyInput()"
+              onkeydown="if(event.key==='Enter')addKeyToPool()"/>
+            <button class="key-vis-btn" onclick="toggleKeyVis()" aria-label="Toggle key visibility">👁</button>
+            <button class="key-add-btn" onclick="addKeyToPool()" aria-label="Add key to pool" title="Add key to pool">+</button>
+          </div>
+
+          <!-- Key pool badge list -->
+          <div class="key-pool-wrap" id="key-pool-wrap">
+            <div class="key-pool-header">
+              <span class="key-pool-label">Key Pool</span>
+              <span class="key-count" id="key-count"></span>
+            </div>
+            <div class="key-pool-list" id="key-pool-list" aria-live="polite">
+              <p class="key-pool-empty">No keys yet — paste a key above and click <strong>+</strong></p>
+            </div>
+          </div>
+
+          <p class="key-help" id="key-help">
+            Free keys at <a href="https://console.groq.com" target="_blank" rel="noopener" class="link-warning">console.groq.com</a>
+            · Add multiple keys to auto-rotate when one hits the rate limit.
+          </p>
+        </section>
+
+        <!-- STEP 1: RESUME UPLOAD -->
+        <section class="form-section" aria-labelledby="upload-heading">
+          <div class="section-label" id="upload-heading">01 / Resume File</div>
+          <div class="upload-zone" id="upload-zone"
+            role="button" tabindex="0"
+            aria-label="Upload resume PDF or DOCX"
+            onclick="document.getElementById('file-input').click()"
+            onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('file-input').click()"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onDrop(event)">
+            <svg class="upload-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <p class="upload-label" id="upload-label">
+              Drop your résumé here or <u>browse</u>
+            </p>
+            <p class="upload-hint">PDF or DOCX · Max 5MB</p>
+          </div>
+
+          <input type="file" id="file-input" accept=".pdf,.docx" aria-hidden="true"
+            style="display:none" onchange="onFileChange(this.files[0])"/>
+
+          <div class="file-bar" id="file-bar" role="status" aria-live="polite">
+            <svg class="file-icon" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span class="file-name" id="file-name"></span>
+            <span class="file-size" id="file-size"></span>
+            <button class="file-remove" onclick="removeFile()" aria-label="Remove file">✕</button>
+          </div>
+        </section>
+
+        <!-- STEP 2: DESIGN PROMPT -->
+        <section class="form-section" aria-labelledby="prompt-heading">
+          <div class="section-label" id="prompt-heading">02 / Design Prompt</div>
+          <textarea id="prompt" rows="5" class="textarea"
+            placeholder="e.g. Create a dark minimal developer portfolio with smooth scroll animations, hero section, skills grid, project cards, and contact form. Use a black and purple color scheme."
+            aria-label="Design prompt"></textarea>
+          <div class="prompt-chips" role="group" aria-label="Prompt presets">
+            <button class="chip" onclick="setPrompt('dark-minimal')">Modern Dark</button>
+            <button class="chip" onclick="setPrompt('clean-minimal')">Clean Minimal</button>
+            <button class="chip" onclick="setPrompt('bold-colorful')">Bold Colorful</button>
+            <button class="chip" onclick="setPrompt('terminal')">Terminal</button>
+            <button class="chip" onclick="setPrompt('glassmorphism')">Glassmorphism</button>
+            <button class="chip" onclick="setPrompt('editorial')">Editorial</button>
+          </div>
+        </section>
+
+        <!-- STEP 3: GENERATE -->
+        <div class="generate-area">
+          <button id="gen-btn" class="gen-btn" onclick="generate()" disabled
+            aria-describedby="status-line">
+            Generate Portfolio →
+          </button>
+          <p class="status-line" id="status-line" role="status" aria-live="polite">
+            Choose a provider, paste your API key, and upload your resume.
+          </p>
+        </div>
+
+        <!-- LOADING INDICATOR -->
+        <div class="loading-box" id="loading-box" aria-live="polite" aria-busy="true" hidden>
+          <div class="loading-bar-track" aria-hidden="true">
+            <div class="loading-bar-fill"></div>
+          </div>
+          <p class="loading-step" id="loading-step">Starting...</p>
+          <p class="loading-provider" id="loading-provider">AI is generating your portfolio...</p>
+          <div class="stage-row" aria-hidden="true">
+            <span class="stage" id="st1">[ ] Parsing</span>
+            <span class="stage" id="st2">[ ] Generating</span>
+            <span class="stage" id="st3">[ ] Rendering</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RIGHT SIDEBAR ──────────────────────────── -->
+      <aside class="app-sidebar" aria-label="How it works">
+        <p class="sidebar-heading">// How it works</p>
+        <ol class="how-list">
+          <li><span class="how-num">01.</span> Pick a provider, add one or more API keys. They rotate automatically if one hits a rate limit.</li>
+          <li><span class="how-num">02.</span> Upload your PDF or DOCX resume. Text is extracted in the browser.</li>
+          <li><span class="how-num">03.</span> Write a design prompt and click Generate. AI forges your portfolio.</li>
+          <li><span class="how-num">04.</span> Preview live, download as ZIP, deploy anywhere.</li>
+        </ol>
+
+        <div class="sidebar-divider"></div>
+        <p class="sidebar-sub-heading">Supported Providers</p>
+        <div class="provider-badges">
+          <span class="pvdr-badge gold"><span class="badge-dot"></span>Groq (Free)</span>
+          <span class="pvdr-badge blue"><span class="badge-dot"></span>Gemini (Free)</span>
+          <span class="pvdr-badge green"><span class="badge-dot"></span>OpenAI</span>
+          <span class="pvdr-badge purple"><span class="badge-dot"></span>OpenRouter</span>
+        </div>
+
+        <div class="sidebar-divider"></div>
+        <p class="sidebar-tech">No server · No backend · 100% browser</p>
+        <p class="sidebar-model" id="model-label">Model: llama-3.3-70b-versatile</p>
+      </aside>
+    </div>
+
+    <!-- ── PREVIEW SECTION ──────────────────────────── -->
+    <section class="preview-section" id="preview-sec" hidden aria-labelledby="preview-heading">
+      <div class="preview-header">
+        <div>
+          <h2 class="preview-title" id="preview-heading">Your Portfolio</h2>
+          <p class="preview-sub">Forged with AI · Edit freely</p>
+        </div>
+        <div class="device-toggle" role="group" aria-label="Preview device">
+          <button class="dev-btn active" id="bdt" onclick="setMode('desktop')">DESKTOP</button>
+          <button class="dev-btn"        id="bdm" onclick="setMode('mobile')">MOBILE</button>
+        </div>
+      </div>
+
+      <div class="iframe-wrap" id="iw">
+        <iframe id="pif" sandbox="allow-scripts" title="Portfolio Preview" loading="lazy"></iframe>
+      </div>
+
+      <div class="preview-actions">
+        <button class="act-btn act-primary" onclick="dlZip()">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Download ZIP
+        </button>
+        <button class="act-btn act-sec" onclick="generate()">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Regenerate
+        </button>
+        <button class="act-btn act-sec" onclick="openCode()">
+          <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          View Code
+        </button>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <span>Portfolio Forge</span>
+    <span>AI-Powered · 100% Browser · No Server</span>
+  </div>
+</footer>
+
+<!-- CODE MODAL -->
+<div class="code-modal" id="code-modal" role="dialog" aria-modal="true" aria-labelledby="code-modal-title"
+  onclick="if(event.target===this)closeCode()">
+  <div class="code-modal-inner">
+    <div class="code-modal-header">
+      <h2 class="code-modal-title" id="code-modal-title">Generated Code</h2>
+      <button class="code-close-btn" onclick="closeCode()" aria-label="Close code modal">[ CLOSE ]</button>
+    </div>
+    <div class="code-tabs" role="tablist">
+      <button class="code-tab active" id="tab-html" role="tab" aria-selected="true"  aria-controls="code-display" onclick="switchTab('html')">index.html</button>
+      <button class="code-tab"        id="tab-css"  role="tab" aria-selected="false" aria-controls="code-display" onclick="switchTab('css')">style.css</button>
+      <button class="code-tab"        id="tab-js"   role="tab" aria-selected="false" aria-controls="code-display" onclick="switchTab('js')">script.js</button>
+    </div>
+    <pre class="code-display" id="code-display" role="tabpanel"></pre>
+    <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copy to Clipboard</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+<!-- App scripts -->
+<script src="src/app.js" defer></script>
+</body>
+</html>

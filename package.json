@@ -1,0 +1,38 @@
+{
+  "name": "portfolioforge",
+  "version": "2.0.0",
+  "description": "AI-powered portfolio generator — upload a resume, get a stunning portfolio in seconds. No server required.",
+  "author": "Shahnawaz Shaikh",
+  "license": "MIT",
+  "homepage": "https://github.com/shaikhshahnawaz13/portfolioforge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shaikhshahnawaz13/portfolioforge.git"
+  },
+  "scripts": {
+    "dev":     "npx serve . --listen 3000 --cors",
+    "test":    "npx vitest run",
+    "test:watch": "npx vitest",
+    "test:coverage": "npx vitest run --coverage",
+    "lint":    "npx eslint src/**/*.js",
+    "format":  "npx prettier --write .",
+    "validate": "npx html-validate index.html"
+  },
+  "devDependencies": {
+    "vitest":    "^1.0.0",
+    "eslint":    "^8.0.0",
+    "prettier":  "^3.0.0",
+    "serve":     "^14.0.0"
+  },
+  "keywords": [
+    "portfolio",
+    "ai",
+    "resume",
+    "generator",
+    "browser",
+    "no-server",
+    "groq",
+    "gemini",
+    "openai"
+  ]
+}
