@@ -4,9 +4,9 @@
 
 <br/>
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&duration=3000&pause=1000&color=00F5D4&center=true&vCenter=true&width=650&lines=Building+AI+tools+that+actually+ship+%E2%9A%A1;Portfolio+Forge+%E2%80%94+resume+%E2%86%92+portfolio+in+seconds;React+%7C+Node.js+%7C+Python+%7C+AI%2FML;Zero+to+deployed+%E2%80%94+no+fluff%2C+just+code)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&duration=3000&pause=1000&color=00F5D4&center=true&vCenter=true&width=650&lines=Building+AI+tools+that+actually+ship;Portfolio+Forge+%E2%80%94+resume+%E2%86%92+portfolio+in+seconds;React+%7C+Node.js+%7C+Python+%7C+AI%2FML;Zero+to+deployed+%E2%80%94+no+fluff%2C+just+code)](https://git.io/typing-svg)
 
-<br/>
+<br/><br/>
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit%20Site-00F5D4?style=for-the-badge&logo=vercel&logoColor=black&labelColor=0a0a0a)](https://shaikhshahnawaz13.github.io/portfolioforge)
 [![GitHub](https://img.shields.io/badge/GitHub-shaikhshahnawaz13-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/shaikhshahnawaz13)
@@ -201,17 +201,15 @@ portfolioforge/
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api?username=shaikhshahnawaz13&show_icons=true&theme=radical&hide_border=true&bg_color=0d0d0d&title_color=00F5D4&icon_color=FF6B35&text_color=ffffff&border_radius=12&include_all_commits=true&count_private=true" height="170" alt="GitHub Stats"/>
-&nbsp;&nbsp;
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=shaikhshahnawaz13&layout=compact&theme=radical&hide_border=true&bg_color=0d0d0d&title_color=00F5D4&text_color=ffffff&border_radius=12&langs_count=8" height="170" alt="Top Languages"/>
+![Commits](https://img.shields.io/badge/Total%20Commits-247-00F5D4?style=for-the-badge&logo=github&labelColor=0d0d0d)
+![Longest Streak](https://img.shields.io/badge/Longest%20Streak-15%20days-FF6B35?style=for-the-badge&logo=github&labelColor=0d0d0d)
+![Repos](https://img.shields.io/badge/Public%20Repos-View%20All-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=0d0d0d)](https://github.com/shaikhshahnawaz13?tab=repositories)
 
-<br/><br/>
+<br/>
 
-<img src="https://streak-stats.demolab.com/?user=shaikhshahnawaz13&theme=radical&hide_border=true&background=0d0d0d&ring=00F5D4&fire=FF6B35&currStreakLabel=00F5D4&sideLabels=ffffff&dates=888888&border_radius=12" alt="GitHub Streak"/>
-
-<br/><br/>
-
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=shaikhshahnawaz13&bg_color=0d0d0d&color=00F5D4&line=00F5D4&point=FF6B35&area=true&area_color=00F5D4&hide_border=true&radius=12" width="95%" alt="Activity Graph"/>
+![JavaScript](https://img.shields.io/badge/JavaScript-49.3%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black)&nbsp;
+![CSS](https://img.shields.io/badge/CSS-31.8%25-1572B6?style=flat-square&logo=css3&logoColor=white)&nbsp;
+![HTML](https://img.shields.io/badge/HTML-18.9%25-E34F26?style=flat-square&logo=html5&logoColor=white)
 
 </div>
 
@@ -293,11 +291,7 @@ portfolioforge/
 
 <div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api/wakatime?username=shaikhshahnawaz13&theme=radical&hide_border=true&bg_color=0d0d0d&title_color=00F5D4&text_color=ffffff&border_radius=12" alt="Wakatime Stats"/>
-
-<br/><br/>
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00F5D4,50:003333,100:0d0d0d&height=110&section=footer&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00F5D4,50:003333,100:0d0d0d&height=120&section=footer&animation=fadeIn" width="100%"/>
 
 *If any of my work helped you — a star means the world to me.*
 
